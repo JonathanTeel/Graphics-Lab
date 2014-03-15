@@ -17,6 +17,10 @@ var innerTableArrowTemplate = "<table class='innerTable" + figNum + "'" + "><tr>
 
 var currRow = 0;
 
+var isVarSet = false;
+
+var lastOutStr;
+
 init();
 
 function init() { //Initializes variables
@@ -201,9 +205,11 @@ function toggleEvents() {
         }
         
         //User clicked on item 'EXPRESSION'. Generate appropriate alert message
-        else if (cellVal.indexOf("EXPRESSION") >= 0) {
+        else if (cellVal.indexOf("EXPRESSION") >= 0 && isVarSet) {
             alert("When editing assignment\nstatements, Choose the Left\nHand Side varibale before\nattempting to specity the\n" + 
                 "Right Hand Side expression");
+            // if ( return event from pad > 0 )
+            // isVarSet = false;
         }
         
         //User clicked a variable on the left side of an assignment operator
@@ -228,8 +234,10 @@ function toggleEvents() {
             	}
           		if (arr.length > 0) {
 					openSelector("Choice Selection Panel", arr).done(function(evt) {
-						if (evt.length > 0)
+						if (evt.length > 0){
 							currentElement.html(evt);
+							isVarSet = true;
+						}
 					});
 				}
             }
@@ -475,10 +483,10 @@ function highlightLine(rowInd) {
 //Returns string representation of the row at specified row index
 function rowToString(rowInd) {
     var string = "";
-    var innerTable = codeTable.rows[rowInd].cells[0].children[0];
-    for (var i = 1; i < innerTable.rows[0].cells.length; i++) {
-        string += innerTable.rows[0].cells[i].innerText;
-    }
+	var innerTable = codeTable.rows[rowInd].cells[0].children[0];
+	for (var i = 1; i < innerTable.rows[0].cells.length; i++) {
+		string += innerTable.rows[0].cells[i].innerText;
+	}
     return string.trim();
 }
 

@@ -33,10 +33,12 @@ function run() {
         $(this).html("Play").off("click").click(function() { run(); });
         $("#" + walkButton.id).html("Walk").off("click").click(function() { walk(); });
     });
+
 }
 
 //Allows users to walk through the program code one step at a time
 function walk() {
+	changeBtnState(true);
     paintbrush++;
     var oldPos = -1;
     if (!programRunning) {
@@ -50,13 +52,13 @@ function walk() {
     }
     programRunning = true;
     //Set some buttons to false while walking or running
-    $(".button" + figNum).attr("disabled", true);
+   // $(".button" + figNum).attr("disabled", true);
     //Turn off toggle events for table cells
     $('.innerTable' + figNum).off('mouseover').off('mouseout').off('click');
     returnToNormalColor();
-    //Don't allow step to go beyond program scope
+    //Don't allow step to go beyond program scope , check if current row is there
     if (step == codeTable.rows.length-1) {
-        selectRow(step);
+        if(codeTable.rows[step] != undefined) selectRow(step);
         step = 0;
         toggleEvents();
         $("#" + runButton.id).html("Run").off("click").click(function() { run(); });
@@ -64,6 +66,7 @@ function walk() {
         $(".button" + figNum).attr("disabled", false);
         programRunning = false;
         fresh = true;
+        changeBtnState(false);
         return;
     }
     selectRow(step);
@@ -72,8 +75,8 @@ function walk() {
     draw();
     $("#drawCanvas" + figNum).trigger("mousemove");
     
-    //Polygon found
-    if (rowToString(step).indexOf("g") >= 0 && rowToString(step).indexOf("draw") == -1) {
+    //Polygon found [ make sure its not erase(g1) ]
+    if (rowToString(step).indexOf("g") >= 0 && rowToString(step).indexOf("draw") == -1 && rowToString(step).indexOf("e") != 0) {
     	var string = rowToString(step).trim();
     	step++;
     	while (!containsCommand(rowToString(step+1))) {
@@ -106,7 +109,7 @@ function walk() {
     }
     else {
     	interpret(rowToString(step));
-    	step++;
+	    step++;
     }
     $("#drawCanvas" + figNum).trigger("mousemove");
 }
@@ -143,8 +146,20 @@ function getIndent(row) {
 	return string;
 }
 
-
-
+// disable / enable buttons for run walk
+function changeBtnState(state){
+	document.getElementById("distanceButton" + figNum).disabled = state;
+	document.getElementById("pointButton" + figNum).disabled = state;
+	document.getElementById("lineButton" + figNum).disabled = state;
+	document.getElementById("polygonButton" + figNum).disabled = state;
+	document.getElementById("circleButton" + figNum).disabled = state;
+	document.getElementById("assignButton" + figNum).disabled = state;
+	document.getElementById("drawButton" + figNum).disabled = state;
+	document.getElementById("eraseButton" + figNum).disabled = state;
+	document.getElementById("colorButton" + figNum).disabled = state;
+	document.getElementById("loopButton" + figNum).disabled = state;
+	document.getElementById("editor" + figNum).disabled = state;
+}
 
 
 
