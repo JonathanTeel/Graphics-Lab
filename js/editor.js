@@ -19,7 +19,8 @@ var currRow = 0;
 
 var isVarSet = false;
 
-var lastOutStr;
+// is it firefox or not [ current only problems with ff / chrome ]
+var isFF;
 
 init();
 
@@ -27,6 +28,9 @@ function init() { //Initializes variables
     var row;
     var cell;
     var innerTable;
+    
+    // check if firefox or not [ for .innerTable problems ]
+    isFF = (typeof InstallTrigger !== 'undefined');
     
     //Make a blank row where the program starts
     row = codeTable.insertRow(0);
@@ -214,7 +218,7 @@ function toggleEvents() {
         
         //User clicked a variable on the left side of an assignment operator
         else if (colNum < innerTable.rows[0].cells.length-1) {
-            if (innerTable.rows[0].cells[colNum+1].innerText.indexOf("=") >= 0) {
+            if (innerTable.rows[0].cells[colNum+1][isFF ? 'textContent' : 'innerText'].indexOf("=") >= 0) {
 				var currentElement = $(this);
             	var arr = new Array();
             	for (var i = 0; i < distanceVariables.length; i++) {
@@ -414,11 +418,11 @@ function highlightParenthesis(openBracket, closeBracket, rowInd, colInd) {
                 for (var j = 0; j < numCells; j++) {
                     if (firstLoop == true) { j = colInd; firstLoop = false; }
                     
-                    if (innerTable.rows[0].cells[j].innerText.indexOf(openBracket) >= 0) {
+                    if (innerTable.rows[0].cells[j][isFF ? 'textContent' : 'innerText'].indexOf(openBracket) >= 0) {
                         if (!firstBrack) firstBrack = true;
                         else bracket++;
                     }
-                    else if (innerTable.rows[0].cells[j].innerText.indexOf(closeBracket) >= 0) {
+                    else if (innerTable.rows[0].cells[j][isFF ? 'textContent' : 'innerText'].indexOf(closeBracket) >= 0) {
                         bracket--;
                     }
                     innerTable.rows[0].cells[j].style.color = "#FF0000";
@@ -447,10 +451,10 @@ function highlightParenthesisBackwards(openBracket, closeBracket, rowInd, colInd
             for (var j = numCells - 1; j >= 0; j--) {
                 if (firstLoop == true) { j = colInd; firstLoop = false; }
                 
-                if (innerTable.rows[0].cells[j].innerText.indexOf(openBracket) >= 0) {
+                if (innerTable.rows[0].cells[j][isFF ? 'textContent' : 'innerText'].indexOf(openBracket) >= 0) {
                     bracket--;
                 }
-                else if (innerTable.rows[0].cells[j].innerText.indexOf(closeBracket) >= 0) {
+                else if (innerTable.rows[0].cells[j][isFF ? 'textContent' : 'innerText'].indexOf(closeBracket) >= 0) {
                     if (!firstBrack) firstBrack = true;
                     else bracket++;
                 }
@@ -485,7 +489,7 @@ function rowToString(rowInd) {
     var string = "";
 	var innerTable = codeTable.rows[rowInd].cells[0].children[0];
 	for (var i = 1; i < innerTable.rows[0].cells.length; i++) {
-		string += innerTable.rows[0].cells[i].innerText;
+		string += innerTable.rows[0].cells[i][isFF ? 'textContent' : 'innerText'];
 	}
     return string.trim();
 }
@@ -644,8 +648,6 @@ function deleteLoop(type, rowNum) {
 		}
 	}
 }
-
-
 
 
 
